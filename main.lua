@@ -172,7 +172,7 @@ function make_follow_camera (game, actor)
     local source = actor.pos - vel * 3
     local target = actor.pos + vel * 6
 
-    local height = math.max(30 - v2.mag(vel) * 5, 10)
+    local height = math.max(40 - v2.mag(vel) * 7.5, 10)
 
     gluLookAt(source.x, source.y, height,
               target.x, target.y, 0,
@@ -227,7 +227,7 @@ function init (game)
   game.add_actor(make_follow_camera(game, player))
   game.add_actor(player)
   game.add_actor(make_terrain(game))
-  --load_level(game, require 'future_track_data')
+  load_level(game, require 'future_track_data')
 end
 
 function wasd_to_direction (w, a, s, d)
