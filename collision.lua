@@ -49,6 +49,15 @@ function polygon_halfwidth_in_direction(p, dir)
 end
 
 function collide(body1, body2)
+  do -- broad phase
+    local distance_sqr = v2.sqrmag(body1.pos - body2.pos)
+    local collision_distance =
+      body1.poly.bounding_radius + body2.poly.bounding_radius
+    if distance_sqr > collision_distance * collision_distance then
+      return false
+    end
+  end
+
   local min_depth = math.huge
   local min_correction = false
 
