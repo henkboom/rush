@@ -1,3 +1,4 @@
+--dokidoki_disable_debug = true
 require 'dokidoki.module' [[]]
 
 import(require 'gl')
@@ -122,18 +123,15 @@ function make_obstacle (game, pos, angle, poly)
   self.poly = poly
   self.tags = {'obstacle'}
 
-  local function draw()
-    --glColor3d(0, 0, 0)
-    --glBegin(GL_POLYGON)
-    --for _, v in ipairs(self.poly.vertices) do
-    --  glVertex2d(v.x, v.y)
-    --end
-    --glEnd()
-    --glColor3d(1, 1, 1)
+  function self.draw_debug()
+    glColor3d(1, 0, 0)
+    glBegin(GL_LINE_LOOP)
+    for _, v in ipairs(self.poly.vertices) do
+      glVertex2d(v.x, v.y)
+    end
+    glEnd()
+    glColor3d(1, 1, 1)
   end
-
-  self.draw_terrain = draw
-  self.draw_minimap_terrain = draw
 
   return self
 end
@@ -217,16 +215,89 @@ function make_dumb_controller(game)
   return self
 end
 
+---- Obstacle Collision Grid --------------------------------------------------
+
+local cell_width = 32
+local buffer = 3
+
+function make_collision_lookup(objects)
+  local cell_object = {
+    poly = collision.make_rectangle(cell_width + buffer*2,
+                                    cell_width + buffer*2),
+    angle = 0
+  }
+
+  -- grid[i][j] holds objects relevant for collisions for the cell with lower
+  -- coords (i*cell_width, j*cell_width)
+  local grid = {}
+
+  for _, o in ipairs(objects) do
+    local x1, x2 = o.pos.x, o.pos.x
+    local y1, y2 = o.pos.y, o.pos.y
+
+    for _, v in ipairs(o.poly.vertices) do
+      x1 = math.min(x1, o.pos.x + v.x)
+      x2 = math.max(x2, o.pos.x + v.x)
+      y1 = math.min(y1, o.pos.y + v.y)
+      y2 = math.max(y2, o.pos.y + v.y)
+    end
+
+    for i = math.floor((x1 - buffer) / cell_width),
+            math.floor((x2 + buffer) / cell_width) do
+      for j = math.floor((y1 - buffer) / cell_width),
+              math.floor((y2 + buffer) / cell_width) do
+        cell_object.pos = v2((i + 0.5) * cell_width, (j + 0.5) * cell_width)
+        if collision.collide(cell_object, o) then
+          grid[i] = grid[i] or {}
+          grid[i][j] = grid[i][j] or {}
+          table.insert(grid[i][j], o)
+        end
+      end
+    end
+  end
+
+  local self = {}
+
+  self = {
+    lookup = function (pos)
+      local i = math.floor(pos.x / cell_width)
+      local j = math.floor(pos.y / cell_width)
+      return grid[i] and grid[i][j] or {}
+    end,
+    draw_debug = function (pos)
+      local i = math.floor(pos.x / cell_width)
+      local j = math.floor(pos.y / cell_width)
+      cell_object.pos = v2((i + 0.5) * cell_width, (j + 0.5) * cell_width)
+      glBegin(GL_LINE_LOOP)
+      for _, v in ipairs(cell_object.poly.vertices) do
+        glVertex2d(v.x + cell_object.pos.x, v.y + cell_object.pos.y)
+      end
+      glEnd()
+      for _, o in ipairs(self.lookup(pos)) do
+        glPushMatrix()
+        glTranslated(o.pos.x, o.pos.y, 0)
+        o.draw_debug()
+        glPopMatrix()
+      end
+    end
+  }
+
+  return self
+end
+
 ---- The Game (no not that one) -----------------------------------------------
 function init (game)
   game.resources = require 'resources'
 
+  load_level(game, require 'future_track_data')
+  local obstacle_lookup =
+    make_collision_lookup(game.get_actors_by_tag('obstacle'))
+
   game.add_actor{
     collision_check = function ()
       local ships = game.get_actors_by_tag('ship')
-      local obstacles = game.get_actors_by_tag('obstacle')
       for _, p in ipairs(ships) do
-        for _, o in ipairs(obstacles) do
+        for _, o in ipairs(obstacle_lookup.lookup(p.pos)) do
           local correction = collision.collide(p, o)
           if correction then
             p.pos = p.pos + correction
@@ -265,7 +336,7 @@ function init (game)
   game.add_actor(player_controller)
   game.add_actor(player)
 
-  for i = 1, 10 do
+  for i = 1, 200 do
     local ai_controller = make_dumb_controller(game)
     local ai = make_ship(game, ai_controller)
 
@@ -273,7 +344,13 @@ function init (game)
     game.add_actor(ai)
   end
 
-  load_level(game, require 'future_track_data')
+  -- debug
+  game.add_actor{
+    draw_object = function ()
+      --obstacle_lookup.draw_debug(player.pos)
+    end
+  }
+  --profiler.start()
 end
 
 function wasd_to_direction (w, a, s, d)
@@ -287,6 +364,7 @@ end
 local width = 640
 local height = 480
 
+--require 'profiler'
 kernel.set_video_mode(width, height)
 kernel.set_ratio(width/height)
 kernel.start_main_loop(actor_scene.make_actor_scene(
@@ -294,4 +372,4 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
   {'draw_setup', 'draw_terrain', 'draw_object', 'draw_minimap_setup',
    'draw_minimap_terrain', 'draw_minimap'},
   init))
-
+--profiler.stop()

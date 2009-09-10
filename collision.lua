@@ -72,6 +72,7 @@ function collide(body1, body2)
       local distance = v2.dot(b2.pos - b1.pos, hw_direction)
       local depth =
         v2.dot(hw, hw_direction) + hw2_mag - distance
+
       if depth < min_depth then
         min_depth = depth
         min_correction = hw_direction * depth * (b1 == body1 and -1 or 1)
