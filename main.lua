@@ -1,4 +1,4 @@
-dokidoki_disable_debug = true
+--dokidoki_disable_debug = true
 require 'dokidoki.module' [[]]
 
 import(require 'gl')
@@ -91,8 +91,8 @@ function make_ship(game, controller)
   end
 
   function self.draw_minimap ()
-    glColor3d(1, 0, 0)
-    glPointSize(10)
+    glColor3d(0, 0, 1)
+    glPointSize(8)
     glBegin(GL_POINTS)
     glVertex2d(0, 0)
     glEnd()
@@ -197,14 +197,25 @@ end
 
 function make_dumb_controller(game)
   local self = {}
+  local ship
 
   self.accel = 1
   self.turn = 0
   self.brake = false
   self.boost = false
 
+  function self.set_ship(new_ship)
+    ship = new_ship
+  end
+
   function self.pre_update ()
-    self.turn = math.max(-1, math.min(1, self.turn + math.random() * 0.1 - 0.05)) * 0.99
+    assert(ship)
+    self.turn = math.max(-0.1, math.min(0.1, math.random() * 0.2 - 0.1))
+    if game.collision_test(ship.pos + v2.rotate(v2(30, -15), ship.angle)) then
+      self.turn = self.turn - 1
+    elseif game.collision_test(ship.pos + v2.rotate(v2(30, 15), ship.angle)) then
+      self.turn = self.turn + 1
+    end
   end
 
   return self
@@ -288,6 +299,19 @@ function init (game)
   local obstacle_lookup =
     make_collision_lookup(game.get_actors_by_tag('obstacle'))
 
+  local query_body = {angle = 0, poly = collision.make_rectangle(4, 4)}
+
+  game.collision_test = function (pos)
+    query_body.pos = pos
+    for _, o in ipairs(obstacle_lookup.lookup(pos)) do
+      local correction = collision.collide(query_body, o)
+      if correction then
+        return true
+      end
+    end
+    return false
+  end
+
   game.add_actor{
     collision_check = function ()
       local ships = game.get_actors_by_tag('ship')
@@ -331,9 +355,10 @@ function init (game)
   game.add_actor(player_controller)
   game.add_actor(player)
 
-  for i = 1, 200 do
+  for i = 1, 50 do
     local ai_controller = make_dumb_controller(game)
     local ai = make_ship(game, ai_controller)
+    ai_controller.set_ship(ai)
 
     game.add_actor(ai_controller)
     game.add_actor(ai)
