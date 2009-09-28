@@ -1,4 +1,4 @@
---dokidoki_disable_debug = true
+dokidoki_disable_debug = true
 require 'dokidoki.module' [[]]
 
 import(require 'gl')
@@ -17,9 +17,8 @@ function load_level(game, level)
   local level_handlers =
   {
     obstacle = function (data)
-      local pos, poly =
-        collision.points_to_polygon(
-          imap(function (p) return v2(unpack(p)) end, data))
+      local points = imap(function (p) return v2(unpack(p)) end, data)
+      local pos, poly = collision.points_to_polygon(points)
       game.add_actor(make_obstacle(game, pos, 0, poly))
     end
   }
@@ -46,7 +45,7 @@ end
 function make_ship(game, controller)
   local self = {}
 
-  self.pos = v2(100, 100)
+  self.pos = v2(150, 150)
   self.angle = 0
   self.poly = collision.make_rectangle(
     game.resources.player_sprite.size[1] / 5,
@@ -59,10 +58,6 @@ function make_ship(game, controller)
   local buffered_accel = 0
 
   function self.update()
-    local new_direction = wasd_to_direction(
-        game.is_key_down(glfw.KEY_UP), game.is_key_down(glfw.KEY_LEFT),
-        game.is_key_down(glfw.KEY_DOWN), game.is_key_down(glfw.KEY_RIGHT))
-
     buffered_accel = buffered_accel * 0.85 + controller.accel * 0.15
     buffered_turn = buffered_turn * 0.85 + controller.turn * 0.15
     self.angle = self.angle - buffered_turn * 0.1
@@ -350,7 +345,6 @@ function init (game)
       --obstacle_lookup.draw_debug(player.pos)
     end
   }
-  --profiler.start()
 end
 
 function wasd_to_direction (w, a, s, d)
@@ -364,7 +358,6 @@ end
 local width = 640
 local height = 480
 
---require 'profiler'
 kernel.set_video_mode(width, height)
 kernel.set_ratio(width/height)
 kernel.start_main_loop(actor_scene.make_actor_scene(
@@ -372,4 +365,3 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
   {'draw_setup', 'draw_terrain', 'draw_object', 'draw_minimap_setup',
    'draw_minimap_terrain', 'draw_minimap'},
   init))
---profiler.stop()
