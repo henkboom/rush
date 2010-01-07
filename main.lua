@@ -46,13 +46,13 @@ function make_ship(game, controller)
   local self = {}
 
   self.pos = v2(150, 150)
+  self.vel = v2(0, 0)
   self.angle = 0
   self.poly = collision.make_rectangle(
     game.resources.player_sprite.size[1] / 5,
     game.resources.player_sprite.size[2] / 5)
   self.tags = {'ship'}
 
-  local vel = v2(0, 0)
 
   local buffered_turn = 0
   local buffered_accel = 0
@@ -67,16 +67,16 @@ function make_ship(game, controller)
 
     -- acceleration
     local direction = v2.unit(self.angle)
-    vel = vel + direction * accel
+    self.vel = self.vel + direction * accel
     -- general damping
-    vel = damp_v2(vel, 0.005, 0.995)
+    self.vel = damp_v2(self.vel, 0.005, 0.995)
     -- braking damping
     if controller.brake then
-      vel = v2.project(vel, direction)  * 0.99 +
-            damp_v2(v2.project(vel, v2.rotate90(direction)), 0.005, 0.97)
+      self.vel = v2.project(self.vel, direction)  * 0.99 +
+            damp_v2(v2.project(self.vel, v2.rotate90(direction)), 0.005, 0.97)
     end
 
-    self.pos = self.pos + vel
+    self.pos = self.pos + self.vel
   end
 
   function self.draw_object()
@@ -100,10 +100,10 @@ function make_ship(game, controller)
   end
 
   function self.handle_collision(normal)
-    local normal_vel = v2.project(vel, normal)
-    local tangent_vel = vel - normal_vel
+    local normal_vel = v2.project(self.vel, normal)
+    local tangent_vel = self.vel - normal_vel
     if v2.dot(normal_vel, normal) < 0 then
-      vel = -0.2 * normal_vel + damp_v2(tangent_vel, v2.mag(normal_vel)*0.75, 1)
+      self.vel = -0.2 * normal_vel + damp_v2(tangent_vel, v2.mag(normal_vel)*0.75, 1)
     end
   end
 
@@ -211,10 +211,22 @@ function make_dumb_controller(game)
   function self.pre_update ()
     assert(ship)
     self.turn = math.max(-0.1, math.min(0.1, math.random() * 0.2 - 0.1))
-    if game.collision_test(ship.pos + v2.rotate(v2(30, -15), ship.angle)) then
+    self.boost = false
+    self.brake = false
+
+    local facing = v2.unit(ship.angle)
+    local facing_vel = math.max(0, v2.dot(facing, ship.vel)) * facing
+
+    if game.collision_test(ship.pos + 30 * facing_vel + v2.rotate(v2(15, -15), ship.angle)) then
       self.turn = self.turn - 1
-    elseif game.collision_test(ship.pos + v2.rotate(v2(30, 15), ship.angle)) then
+    elseif game.collision_test(ship.pos + 30 * facing_vel + v2.rotate(v2(15, 15), ship.angle)) then
       self.turn = self.turn + 1
+    end
+
+    if game.collision_test(ship.pos + ship.vel * 30) then
+      self.brake = true
+    elseif not game.collision_test(ship.pos + facing_vel * 60) then
+      self.boost = true
     end
   end
 

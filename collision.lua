@@ -10,7 +10,7 @@ local native = require 'collision.native'
 
 function make_polygon(vertices)
   if v2.cross(vertices[2] - vertices[1], vertices[3] - vertices[2]) < 0 then
-    vertices = reverse(vertices)
+    vertices = ireverse(vertices)
   end
 
   local coords = {}
@@ -22,8 +22,9 @@ function make_polygon(vertices)
 end
 
 function collide(body1, body2)
-  local facing1 = v2.unit(body1.angle)
-  local facing2 = v2.unit(body2.angle)
+  -- grr backwards compatibility
+  local facing1 = body1.facing or v2.unit(body1.angle)
+  local facing2 = body2.facing or v2.unit(body2.angle)
 
   local collision, x, y = native.collide(
     body1.pos.x, body1.pos.y, facing1.x, facing1.y, body1.poly.data,

@@ -128,13 +128,14 @@ int separate_by_axis(vector_s axis, lua_Number hw1, const body_s *body1,
     //        vector_neg(vector_rotate_from(axis, body2->facing)),
     //        body2->poly),
     //    vector_dot(body2->pos, axis), overlap);
-    if(overlap < 0) return 0;
+    if(overlap <= 0) return 0;
 
     vector_s correction =
         vector_mul(axis, overlap/vector_dot(axis, axis));
+    if(correction.x == 0 && correction.y == 0) return 0;
+
     //printf("correction = %lf, %lf\n", correction.x, correction.y);
-    if(vector_dot(*out, *out) == 0 ||
-       vector_dot(correction, correction) < vector_dot(*out, *out))
+    if(vector_dot(correction, correction) < vector_dot(*out, *out))
         *out = correction;
     return 1;
 }
@@ -189,7 +190,7 @@ int collision_native__collide(lua_State *L)
     }
     else
     {
-        vector_s correction = make_vector(0, 0);
+        vector_s correction = make_vector(1.0/0.0, 1.0/0.0);
 
         if(!separate_by_axes(&body1, &body2, &correction) ||
            !separate_by_axes(&body2, &body1, &correction))
