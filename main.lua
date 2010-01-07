@@ -45,39 +45,10 @@ end
 function make_ship(game, controller)
   local self = {}
 
-  self.pos = v2(150, 150)
-  self.vel = v2(0, 0)
-  self.angle = 0
   self.poly = collision.make_rectangle(
     game.resources.player_sprite.size[1] / 5,
     game.resources.player_sprite.size[2] / 5)
   self.tags = {'ship'}
-
-
-  local buffered_turn = 0
-  local buffered_accel = 0
-
-  function self.update()
-    buffered_accel = buffered_accel * 0.85 + controller.accel * 0.15
-    buffered_turn = buffered_turn * 0.85 + controller.turn * 0.15
-    self.angle = self.angle - buffered_turn * 0.1
-
-    local accel = buffered_accel * 0.02
-    if controller.boost then accel = accel + 0.02 end
-
-    -- acceleration
-    local direction = v2.unit(self.angle)
-    self.vel = self.vel + direction * accel
-    -- general damping
-    self.vel = damp_v2(self.vel, 0.005, 0.995)
-    -- braking damping
-    if controller.brake then
-      self.vel = v2.project(self.vel, direction)  * 0.99 +
-            damp_v2(v2.project(self.vel, v2.rotate90(direction)), 0.005, 0.97)
-    end
-
-    self.pos = self.pos + self.vel
-  end
 
   function self.draw_object()
     if controller.brake then glColor3d(1, 0, 0)
@@ -174,26 +145,6 @@ function make_follow_camera (game, actor)
 end
 
 ---- Controllers --------------------------------------------------------------
-
-function make_player_controller(game)
-  local self = {}
-
-  self.accel = 0
-  self.turn = 0
-  self.brake = false
-  self.boost = false
-
-  function self.pre_update ()
-    self.accel = (game.is_key_down(glfw.KEY_UP) and 1 or 0) -
-                 (game.is_key_down(glfw.KEY_DOWN) and 1 or 0)
-    self.turn = (game.is_key_down(glfw.KEY_RIGHT) and 1 or 0) -
-                (game.is_key_down(glfw.KEY_LEFT) and 1 or 0)
-    self.brake = game.is_key_down(string.byte('Z'))
-    self.boost = game.is_key_down(string.byte('X'))
-  end
-
-  return self
-end
 
 function make_dumb_controller(game)
   local self = {}
