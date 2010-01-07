@@ -336,27 +336,7 @@ function init (game)
           end
         end
       end
-    end,
-
-    draw_setup = function ()
-      glClearColor(0, 0, 0, 0)
-      glClear(GL_COLOR_BUFFER_BIT)
-      glEnable(GL_BLEND)
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-      glMatrixMode(GL_PROJECTION)
-      glLoadIdentity()
-      gluPerspective(100, 4/3, 1, 10000)
-      glMatrixMode(GL_MODELVIEW)
-      glLoadIdentity()
-    end,
-    draw_minimap_setup = function ()
-      glMatrixMode(GL_PROJECTION)
-      glLoadIdentity()
-      glOrtho(0, 640, 0, 480, 1, -1)
-      glMatrixMode(GL_MODELVIEW)
-      glLoadIdentity()
-      glScaled(0.1, 0.1, 0.1)
-    end,
+    end
   }
 
   game.add_actor(make_terrain(game))
