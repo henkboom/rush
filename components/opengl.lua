@@ -12,10 +12,6 @@ game.actors.new_generic("opengl", function ()
     glu.gluPerspective(100, 4/3, 1, 10000)
     gl.glMatrixMode(gl.GL_MODELVIEW)
     gl.glLoadIdentity()
-    -- just until we have proper camera code
-    glu.gluLookAt(0, 0, 40,
-                  0, 0, 0,
-                  0, 1, 0)
   end
 
   function draw_minimap_setup()
