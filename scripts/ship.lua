@@ -50,3 +50,12 @@ function update()
 
   self.transform.pos = self.transform.pos + vel
 end
+
+function self.collider.on_collide(normal)
+  local normal_vel = v2.project(vel, normal)
+  local tangent_vel = vel - normal_vel
+  if v2.dot(normal_vel, normal) < 0 then
+    vel = -0.2 * normal_vel +
+          damp_v2(tangent_vel, v2.mag(normal_vel)*0.75, 1)
+  end
+end

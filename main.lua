@@ -81,27 +81,6 @@ function make_ship(game, controller)
   return self
 end
 
----- Obstacles ----------------------------------------------------------------
-function make_obstacle (game, pos, angle, poly)
-  local self = {}
-  self.pos = pos
-  self.angle = angle
-  self.poly = poly
-  self.tags = {'obstacle'}
-
-  function self.draw_debug()
-    glColor3d(1, 0, 0)
-    glBegin(GL_LINE_LOOP)
-    for _, v in ipairs(self.poly.vertices) do
-      glVertex2d(v.x, v.y)
-    end
-    glEnd()
-    glColor3d(1, 1, 1)
-  end
-
-  return self
-end
-
 ---- Controllers --------------------------------------------------------------
 
 function make_dumb_controller(game)

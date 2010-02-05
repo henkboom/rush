@@ -8,7 +8,7 @@ local blueprints = require 'blueprints'
 
 kernel.start_main_loop(game.make_game(
   {'update_setup', 'update', 'collision_check', 'update_cleanup'},
-  {'draw_setup', 'draw_terrain', 'draw', 'draw_minimap_setup',
+  {'draw_setup', 'draw_terrain', 'draw', '_draw_debug', 'draw_minimap_setup',
    'draw_minimap_terrain', 'draw_minimap'},
   function (game)
     game.init_component('exit_handler')
@@ -16,11 +16,14 @@ kernel.start_main_loop(game.make_game(
 
     game.init_component('opengl')
     game.init_component('resources')
-
     game.init_component('camera')
+    game.init_component('collision')
+    game.init_component('level')
+    game.level.load(loadfile('level_data.lua')())
 
     game.actors.new(blueprints.terrain)
-    local player = game.actors.new(blueprints.player_ship)
+    local player = game.actors.new(blueprints.player_ship,
+      {'transform', pos=v2(100, 100)})
 
     game.camera.set_target(player)
   end))
