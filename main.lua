@@ -102,48 +102,6 @@ function make_obstacle (game, pos, angle, poly)
   return self
 end
 
----- Terrain ------------------------------------------------------------------
-function make_terrain (game)
-  local self = {}
-
-  self.pos = v2(0, 0)
-
-  local function draw ()
-    game.resources.level_sprite:draw()
-  end
-
-  self.draw_terrain = draw
-  self.draw_minimap_terrain = draw
-
-  return self
-end
-
----- Camera -------------------------------------------------------------------
-function make_follow_camera (game, actor)
-  local self = {}
-  local last_pos = actor.pos
-  local vel = v2(0, 0)
-
-  function self.post_update ()
-    local new_vel =  actor.pos - last_pos
-    vel = vel * 0.93 + new_vel * 0.07
-    last_pos = actor.pos
-  end
-
-  function self.draw_setup ()
-    local source = actor.pos - vel * 3
-    local target = actor.pos + vel * 6
-
-    local height = math.max(40 - v2.mag(vel) * 7.5, 10)
-
-    gluLookAt(source.x, source.y, height,
-              target.x, target.y, 0,
-              0, 1, 0)
-  end
-
-  return self
-end
-
 ---- Controllers --------------------------------------------------------------
 
 function make_dumb_controller(game)
@@ -290,11 +248,8 @@ function init (game)
     end
   }
 
-  game.add_actor(make_terrain(game))
-
   local player_controller = make_player_controller(game)
   local player = make_ship(game, player_controller)
-  game.add_actor(make_follow_camera(game, player))
   game.add_actor(player_controller)
   game.add_actor(player)
 

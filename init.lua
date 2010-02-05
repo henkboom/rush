@@ -19,6 +19,7 @@ kernel.start_main_loop(game.make_game(
 
     game.init_component('camera')
 
+    game.actors.new(blueprints.terrain)
     local player = game.actors.new(blueprints.player_ship)
 
     game.camera.set_target(player)
