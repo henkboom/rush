@@ -1,11 +1,19 @@
-LDFLAGS=-Llua5.1
-CFLAGS=-I/usr/include/lua5.1 -Wall
+NAME=racer
 
-collision.so: collision.o
-	gcc -shared -o $@ $^ ${LDFLAGS}
+.PHONY: $(NAME)
+
+linux:
+	make $(NAME) PLATFORM=linux
+
+macosx:
+	make $(NAME) PLATFORM=macosx
+
+mingw:
+	make $(NAME) PLATFORM=mingw
+
+$(NAME):
+	make -C dokidoki-support $(PLATFORM) NAME="../$(NAME)"
 
 clean:
-	rm -f collision.so
+	make -C dokidoki-support clean NAME="../$(NAME)"
 
-install:
-	cp collision.so collision.lua ~/local/lib/lua
