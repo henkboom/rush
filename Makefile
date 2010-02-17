@@ -1,4 +1,4 @@
-NAME=racer
+NAME=rush
 
 .PHONY: $(NAME)
 

@@ -6,8 +6,7 @@ local v2 = require 'dokidoki.v2'
 
 kernel.start_main_loop(game.make_game(
   {'update_setup', 'update', 'collision_check', 'update_cleanup'},
-  {'draw_setup', 'draw_terrain', 'draw', '_draw_debug', 'draw_minimap_setup',
-   'draw_minimap_terrain', 'draw_minimap'},
+  {'draw_setup', 'draw', '_draw_debug'},
   function (game)
     game.init_component('exit_handler')
     game.init_component('keyboard')
@@ -17,10 +16,8 @@ kernel.start_main_loop(game.make_game(
     game.init_component('resources')
     game.init_component('camera')
     game.init_component('collision')
-    game.init_component('level')
-    game.level.load(loadfile('level_data.lua')())
 
-    game.actors.new(game.blueprints.terrain)
+    game.actors.new(game.blueprints.environment_manager)
     local player = game.actors.new(game.blueprints.player_ship,
       {'transform', pos=v2(100, 100)})
 

@@ -16,3 +16,6 @@ terrain = game.make_blueprint('terrain',
 obstacle = game.make_blueprint('obstacle',
   {'transform'},
   {'collider', class='obstacle'})
+
+environment_manager = game.make_blueprint('environment_manager',
+  {'environment_manager'})
