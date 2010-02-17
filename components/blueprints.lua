@@ -1,7 +1,4 @@
-require 'dokidoki.module' [[ player_ship, terrain, obstacle ]]
-
-collision = require 'dokidoki.collision'
-
+local collision = require 'dokidoki.collision'
 local game = require 'dokidoki.game'
 local v2 = require 'dokidoki.v2'
 
@@ -19,5 +16,3 @@ terrain = game.make_blueprint('terrain',
 obstacle = game.make_blueprint('obstacle',
   {'transform'},
   {'collider', class='obstacle'})
-
-return get_module_exports()
