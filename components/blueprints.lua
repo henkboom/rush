@@ -19,3 +19,7 @@ obstacle = game.make_blueprint('obstacle',
 
 environment_manager = game.make_blueprint('environment_manager',
   {'environment_manager'})
+
+fluff = game.make_blueprint('fluff',
+  {'transform', scale_x=1/8, scale_y=1/8},
+  {'sprite', resource='fluff_sprite', color={0.7, 0.7, 1, 0.7}})

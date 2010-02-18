@@ -1,13 +1,26 @@
 local gl = require 'gl'
 local v2 = require 'dokidoki.v2'
 
-local CELL_SIZE = 256
+local CELL_SIZE = 128
 local CELL_DISTANCE = 3
 
 local cells = {}
 
 local function load_cell(i, j)
-  return {}
+  print('loading ' .. i .. ',' .. j)
+  local actors = {}
+  for n = 1, 8 do
+    actors[n] = game.actors.new(game.blueprints.fluff,
+      {'transform',
+       pos=v2((i+math.random())*CELL_SIZE, (j+math.random())*CELL_SIZE)})
+    print(actors[n].transform.pos)
+  end
+  return function ()
+    print('deleting ' .. i .. ',' .. j)
+    for _, actor in ipairs(actors) do
+      actor.dead = true
+    end
+  end
 end
 
 function update()
@@ -23,12 +36,9 @@ function update()
 
     -- cull old stuff
     for i, col in pairs(cells) do
-      for j, actors in pairs(col) do
+      for j, delete_func in pairs(col) do
         if i < min_x or max_x < i or j < min_y or max_y < j then
-          print('deleting ' .. i .. ',' .. j)
-          for _, actor in ipairs(actors) do
-            actor.dead = true
-          end
+          delete_func()
           col[j] = nil
         end
       end
@@ -41,13 +51,15 @@ function update()
     for i = min_x, max_x do
       cells[i] = cells[i] or {}
       for j = min_y, max_y do
-        cells[i][j] = load_cell(i, j)
+        if not cells[i][j] then
+          cells[i][j] = load_cell(i, j)
+        end
       end
     end
   end
 end
 
-function draw()
+function _draw()
   for i, col in pairs(cells) do
     for j, _ in pairs(col) do
       local x = i * CELL_SIZE
