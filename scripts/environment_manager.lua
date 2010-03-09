@@ -7,16 +7,17 @@ local CELL_DISTANCE = 3
 local cells = {}
 
 local function load_cell(i, j)
-  print('loading ' .. i .. ',' .. j)
   local actors = {}
   for n = 1, 8 do
     actors[n] = game.actors.new(game.blueprints.fluff,
       {'transform',
-       pos=v2((i+math.random())*CELL_SIZE, (j+math.random())*CELL_SIZE)})
-    print(actors[n].transform.pos)
+       pos=v2((i+math.random())*CELL_SIZE, (j+math.random())*CELL_SIZE),
+       scale_x=math.random()+2,
+       scale_y=math.random()+2},
+      {'sprite',
+       color={0.7+math.random()*0.1, 0.7+math.random()*0.1, 0.9+math.random()*0.1, 0.3}})
   end
   return function ()
-    print('deleting ' .. i .. ',' .. j)
     for _, actor in ipairs(actors) do
       actor.dead = true
     end

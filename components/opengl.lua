@@ -3,7 +3,7 @@ local glu = require 'glu'
 
 game.actors.new_generic("opengl", function ()
   function draw_setup()
-    gl.glClearColor(0, 0, 0, 0)
+    gl.glClearColor(0.3, 0.2, 0.4, 0)
     gl.glClear(gl.GL_COLOR_BUFFER_BIT)
     gl.glEnable(gl.GL_BLEND)
     gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)

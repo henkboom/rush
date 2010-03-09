@@ -40,7 +40,7 @@ function update()
   -- acceleration
   vel = vel + self.transform.facing * current_accel
   -- general damping
-  vel = damp_v2(vel, 0.005, 0.995)
+  vel = damp_v2(vel, 0.005, 0.997)
   -- braking damping
   if brake then
     vel =
