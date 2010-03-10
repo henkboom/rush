@@ -1,33 +1,22 @@
 local gl = require 'gl'
 local v2 = require 'dokidoki.v2'
 
+local generator = require 'generator'
+
 local CELL_SIZE = 128
 local CELL_DISTANCE = 3
 
 local cells = {}
 
-local function load_cell(i, j)
-  local actors = {}
-  for n = 1, 8 do
-    actors[n] = game.actors.new(game.blueprints.fluff,
-      {'transform',
-       pos=v2((i+math.random())*CELL_SIZE, (j+math.random())*CELL_SIZE),
-       scale_x=math.random()+2,
-       scale_y=math.random()+2},
-      {'sprite',
-       color={0.7+math.random()*0.1, 0.7+math.random()*0.1, 0.9+math.random()*0.1, 0.3}})
-  end
-  return function ()
-    for _, actor in ipairs(actors) do
-      actor.dead = true
-    end
-  end
-end
+local load_cell = generator.make(game, CELL_SIZE)
 
 function update()
   local player = game.actors.get('player_ship')[1]
   if player then
-    local center = player.transform.pos
+    local player_direction = v2.sqrmag(player.ship.vel) ~= 0
+      and v2.norm(player.ship.vel) or player.transform.facing
+    local center = player.transform.pos +
+                   player_direction * CELL_SIZE * (CELL_DISTANCE-1)
     local x = math.floor(center.x/CELL_SIZE)
     local y = math.floor(center.y/CELL_SIZE)
     local min_x = x - CELL_DISTANCE
