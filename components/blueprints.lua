@@ -10,15 +10,14 @@ player_ship = game.make_blueprint('player_ship',
   {'ship'})
 
 terrain = game.make_blueprint('terrain',
-  {'transform'},
-  {'sprite', resource='terrain_sprite'})
+  {'terrain'})
+
+tubes = game.make_blueprint('tubes',
+  {'tubes'})
 
 obstacle = game.make_blueprint('obstacle',
   {'transform'},
   {'collider', class='obstacle'})
-
-environment_manager = game.make_blueprint('environment_manager',
-  {'environment_manager'})
 
 fluff = game.make_blueprint('fluff',
   {'transform'},
