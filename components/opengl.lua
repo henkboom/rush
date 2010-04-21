@@ -10,11 +10,36 @@ fog_color[3] = 1
 
 game.actors.new_generic("opengl", function ()
   function draw_setup()
-    gl.glClearColor(0, 0, 0, 0)
-    gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+    --gl.glClearColor(0, 0, 0, 0)
+    --gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
+    -- clear
+    gl.glMatrixMode(gl.GL_PROJECTION)
+    gl.glLoadIdentity()
+    gl.glOrtho(-1, 1, -1, 1, 1, -1)
+    gl.glMatrixMode(gl.GL_MODELVIEW)
+    gl.glLoadIdentity()
+
     gl.glEnable(gl.GL_BLEND)
+    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+    gl.glDisable(gl.GL_FOG)
+    gl.glColor4d(0, 0, 0, 0.6)
+    gl.glBegin(gl.GL_QUADS)
+    gl.glVertex2d(-1, -1)
+    gl.glVertex2d( 1, -1)
+    gl.glVertex2d( 1,  1)
+    gl.glVertex2d(-1,  1)
+    gl.glEnd()
+    gl.glColor3d(1, 1, 1)
+
+    -- prepare for real drawing
     gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
     --gl.glEnable(gl.GL_POLYGON_SMOOTH)
+
+    gl.glMatrixMode(gl.GL_PROJECTION)
+    gl.glLoadIdentity()
+    glu.gluPerspective(100, 4/3, 1, 2048)
+    gl.glMatrixMode(gl.GL_MODELVIEW)
 
     gl.glFogi(gl.GL_FOG_MODE, gl.GL_LINEAR)
     gl.glFogfv(gl.GL_FOG_COLOR, fog_color:ptr())
@@ -24,11 +49,6 @@ game.actors.new_generic("opengl", function ()
     gl.glHint(gl.GL_FOG_HINT, gl.GL_NICEST)
     gl.glEnable(gl.GL_FOG)
 
-    gl.glMatrixMode(gl.GL_PROJECTION)
-    gl.glLoadIdentity()
-    glu.gluPerspective(100, 4/3, 1, 2000)
-    gl.glMatrixMode(gl.GL_MODELVIEW)
-    gl.glLoadIdentity()
   end
 
   function draw_minimap_setup()

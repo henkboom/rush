@@ -28,8 +28,8 @@ function make_tube_set(direction, height)
 
   local normal = v2.rotate90(direction)
 
-  function tube_set.draw(draw_rect)
-    local draw_rect = game.environment.draw_rect
+  function tube_set.draw()
+    local draw_rect = game.environment.tube_draw_rect
     local points = {
       v2(draw_rect[1], draw_rect[2]),
       v2(draw_rect[1], draw_rect[4]),

@@ -3,8 +3,9 @@ local v2 = require 'dokidoki.v2'
 
 local generator = require 'generator'
 
-local CELL_SIZE = 128
+local CELL_SIZE = 64
 local CELL_DISTANCE = 16
+local TUBE_RECT_SCALE = 2
 
 -- the current draw area {x1, y1, x2, y2}
 -- initialize to something sane
@@ -37,6 +38,13 @@ game.actors.new_generic('environment', function ()
         (max_y + 1) * CELL_SIZE
       }
   
+      game.environment.tube_draw_rect = {
+        (x - CELL_DISTANCE * TUBE_RECT_SCALE) * CELL_SIZE,
+        (y - CELL_DISTANCE * TUBE_RECT_SCALE) * CELL_SIZE,
+        (x + CELL_DISTANCE * TUBE_RECT_SCALE + 1) * CELL_SIZE,
+        (y + CELL_DISTANCE * TUBE_RECT_SCALE + 1) * CELL_SIZE
+      }
+
       -- cull old stuff
       for i, col in pairs(cells) do
         for j, delete_func in pairs(col) do
