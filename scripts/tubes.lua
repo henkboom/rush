@@ -68,7 +68,7 @@ function make_tube_set(direction, height)
           gl.glVertex3d(p3b.x, p3b.y, height)
           gl.glEnd()
 
-          gl.glColor4d(1, 1, 1, 0.1)
+          game.opengl.set_color(0.1)
           gl.glBegin(gl.GL_QUAD_STRIP)
           gl.glVertex3d(p1a.x, p1a.y, height-5)
           gl.glVertex3d(p1b.x, p1b.y, height-5)
@@ -82,7 +82,7 @@ function make_tube_set(direction, height)
           gl.glVertex3d(p1a.x, p1a.y, height-5)
           gl.glVertex3d(p1b.x, p1b.y, height-5)
           gl.glEnd()
-          gl.glColor3d(1, 1, 1)
+          game.opengl.reset_color()
         end
       end
     end

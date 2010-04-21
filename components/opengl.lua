@@ -8,11 +8,21 @@ fog_color[1] = 0
 fog_color[2] = 0
 fog_color[3] = 1
 
+local awesome_level = 0
+function set_awesome_level(a)
+  awesome_level = math.max(a, a * 0.02 + awesome_level * 0.98)
+end
+
+function set_color(r, g, b, a)
+  gl.glColor4d(r, g or r, b or r, a or awesome_level * 0.4)
+end
+
+function reset_color(r, g, b, a)
+  set_color(1, 1, 1)
+end
+
 game.actors.new_generic("opengl", function ()
   function draw_setup()
-    --gl.glClearColor(0, 0, 0, 0)
-    --gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-
     -- clear
     gl.glMatrixMode(gl.GL_PROJECTION)
     gl.glLoadIdentity()
@@ -20,20 +30,30 @@ game.actors.new_generic("opengl", function ()
     gl.glMatrixMode(gl.GL_MODELVIEW)
     gl.glLoadIdentity()
 
-    gl.glEnable(gl.GL_BLEND)
-    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
     gl.glDisable(gl.GL_FOG)
-    gl.glColor4d(0, 0, 0, 0.6)
+    gl.glEnable(gl.GL_BLEND)
+
+    gl.glBlendFunc(gl.GL_ZERO, gl.GL_DST_ALPHA)
     gl.glBegin(gl.GL_QUADS)
     gl.glVertex2d(-1, -1)
     gl.glVertex2d( 1, -1)
     gl.glVertex2d( 1,  1)
     gl.glVertex2d(-1,  1)
     gl.glEnd()
-    gl.glColor3d(1, 1, 1)
+
+    gl.glBlendFunc(gl.GL_ZERO, gl.GL_ONE_MINUS_SRC_ALPHA)
+    gl.glColor4d(1, 1, 1, 1.1/256)
+    gl.glBegin(gl.GL_QUADS)
+    gl.glVertex2d(-1, -1)
+    gl.glVertex2d( 1, -1)
+    gl.glVertex2d( 1,  1)
+    gl.glVertex2d(-1,  1)
+    gl.glEnd()
+
+    reset_color()
 
     -- prepare for real drawing
-    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
+    gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE)
     --gl.glEnable(gl.GL_POLYGON_SMOOTH)
 
     gl.glMatrixMode(gl.GL_PROJECTION)

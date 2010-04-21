@@ -28,6 +28,8 @@ local function damp_v2(vect, scalar, multiplier)
   end
 end
 
+local assumed_max_vel = 17.5
+
 function update()
   buffered_accel = buffered_accel * 0.85 + accel * 0.15
   buffered_turn = buffered_turn * 0.85 + turn * 0.15
@@ -49,4 +51,5 @@ function update()
   end
 
   self.transform.pos = self.transform.pos + vel
+  game.opengl.set_awesome_level(v2.mag(vel)^3 / assumed_max_vel^3)
 end

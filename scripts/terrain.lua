@@ -24,13 +24,13 @@ local function draw_x_line(min_x, max_x, y)
   gl.glEnd()
 
   gl.glBegin(gl.GL_QUAD_STRIP)
-  gl.glColor4d(1, 1, 1, 0.15)
+  game.opengl.set_color(0.15)
   for i = 0, segments do
     local x = min_x + i * segment_length
     gl.glVertex3d(x, y, 0)
     gl.glVertex3d(x, y, glow_height)
   end
-  gl.glColor3d(1, 1, 1)
+  game.opengl.reset_color()
   gl.glEnd()
 end
 
@@ -53,13 +53,13 @@ local function draw_y_line(x, min_y, max_y)
   gl.glEnd()
 
   gl.glBegin(gl.GL_QUAD_STRIP)
-  gl.glColor4d(1, 1, 1, 0.15)
+  game.opengl.set_color(0.15)
   for i = 0, segments do
     local y = min_y + i * segment_length
     gl.glVertex3d(x, y, 0)
     gl.glVertex3d(x, y, glow_height)
   end
-  gl.glColor3d(1, 1, 1)
+  game.opengl.reset_color()
   gl.glEnd()
 end
 
