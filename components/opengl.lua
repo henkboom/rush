@@ -18,7 +18,7 @@ function set_color(r, g, b, a)
 end
 
 function reset_color(r, g, b, a)
-  set_color(1, 1, 1)
+  set_color(0.5)
 end
 
 game.actors.new_generic("opengl", function ()
