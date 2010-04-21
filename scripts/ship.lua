@@ -3,10 +3,9 @@ local v2 = require 'dokidoki.v2'
 self.tags.ship = true
 
 -- controls access
-accel = 0
+accel = false
 turn = 0
 brake = false
-boost = false
 
 -- read only please
 vel = v2(0, 0)
@@ -31,13 +30,14 @@ end
 local assumed_max_vel = 17.5
 
 function update()
-  buffered_accel = buffered_accel * 0.85 + accel * 0.15
+  local brake = v2.dot(self.transform.facing, vel)/v2.mag(vel) <= 0.75
+
+  buffered_accel = buffered_accel * 0.85 + (accel and 0.15 or 0)
   buffered_turn = buffered_turn * 0.85 + turn * 0.15
   self.transform.facing =
     v2.norm(v2.rotate(self.transform.facing, buffered_turn / 10))
 
-  local current_accel = buffered_accel * 0.02
-  if boost then current_accel = current_accel + 0.02 end
+  local current_accel = buffered_accel * 0.04
 
   -- acceleration
   vel = vel + self.transform.facing * current_accel
