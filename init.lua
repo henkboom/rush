@@ -16,7 +16,6 @@ kernel.start_main_loop(game.make_game(
     game.init_component('opengl')
     game.init_component('resources')
     game.init_component('camera')
-    game.init_component('collision')
     game.init_component('environment')
 
     game.actors.new(game.blueprints.terrain)
