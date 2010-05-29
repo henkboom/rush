@@ -17,6 +17,7 @@ kernel.start_main_loop(game.make_game(
     game.init_component('resources')
     game.init_component('camera')
     game.init_component('environment')
+    game.init_component('pause')
 
     game.actors.new(game.blueprints.terrain)
     game.actors.new(game.blueprints.tubes)
